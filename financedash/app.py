@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from models import db,Usuario
+from models import db,Usuario, Transacao
 
 app = Flask(__name__)
 
@@ -74,6 +74,40 @@ def logout():
     session.clear()
     
     return redirect(url_for("login"))
+
+@app.route("/nova_transacao", methods=["GET", "POST"])
+def nova_transacao():
+    
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+    
+    if request.method == "POST":
+        
+        descricao = request.form["descricao"]
+        valor = float(request.form["valor"])
+        tipo = request.form["tipo"]
+        categoria = request.form["categoria"]
+        data = request.form["data"]
+        
+        from datetime import datetime
+    
+        data = datetime.strptime(data, "%Y-%m-%d").date()
+    
+        nova = Transacao(
+            usuario_id=session["usuario_id"],
+            descricao=descricao,
+            valor=valor,
+            tipo=tipo,
+            categoria=categoria,
+            data=data
+        )
+    
+        db.session.add(nova)
+        db.session.commit()
+        
+        return redirect(url_for("dashboard"))
+
+    return render_template("nova_transacao.html")
         
 
 if __name__ == "__main__":
