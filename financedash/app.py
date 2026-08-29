@@ -153,7 +153,38 @@ def excluir_transacao(id):
     db.session.commit()
 
     return redirect(url_for("dashboard"))
+
+@app.route("/editar_transacao/<int:id>", methods=["GET", "POST"])
+def editar_transacao(id):
+    
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+    
+    transacao = Transacao.query.get_or_404(id)
+    
+    if transacao.usuario_id != session["usuario_id"]:
+        return "Acesso não autorizado", 403
+    
+    if request.method == "POST":
         
+        transacao.descricao = request.form["descricao"]
+        transacao.valor = float(request.form["valor"])
+        transacao.tipo = request.form["tipo"]
+        transacao.categoria = request.form["categoria"]
+        
+        data= request.form.get("data")
+        
+        if data:
+            transacao.data=datetime.strptime(data, "%Y-%m-%d").date()
+         
+        db.session.commit()
+        
+        return redirect(url_for("dashboard"))
+    
+    return render_template(
+        "editar_transacao.html",
+        transacao=transacao
+        )
 
 if __name__ == "__main__":
     app.run(debug=True)
