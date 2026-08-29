@@ -16,12 +16,69 @@
 
     <h2>Olá {{ session["usuario_nome"]}}!</h2>
 
-    <p>Você esta logado.</p>
-
     <a href="{{ url_for('nova_transacao')}}">Nova Transação</a>
 
-    <br><br>
-    
+    <hr>
+
+    <h3>Resumo financeiro</h3>
+
+    <p>
+        Receitas:
+        R$ {{ "%.2f"|format(receitas) }}
+    </p>
+
+    <p>
+        Despesas:
+        R$ {{ "%.2f"|format(despesas )}}
+    </p>
+
+    <p>
+        Saldo:
+        R$ {{ "%.2f"|format(saldo) }}
+    </p>
+
+    <hr>
+
+    <h3>Transações</h3>
+
+    {% if transacoes %}
+
+        {% for transacao in transacoes %}
+
+            <div>
+                <strong> 
+                    {{ transacao.descricao}}
+                </strong>
+
+                <p>
+                    Categoria: {{transacao.categoria}}
+                </p>
+
+                <p>
+                    Tipo: {{transacao.tipo}}
+                </p>
+                    
+                <p>
+                    Valor:
+                    R$ {{ "%.2f"|format(transacao.valor)}}
+                </p>
+
+                <p>
+                    Data: {{transacao.data.strftime("%d/%m/%Y")}}
+                </p>
+            </div>
+
+            <hr>
+        {% endfor %}
+
+    {% else %}
+
+            <p>
+                Você ainda não possui transações.
+            </p>
+
+    {% endif %}
+
     <a href="{{ url_for('logout')}}">Sair</a>
 
 </body>

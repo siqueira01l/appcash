@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, date
 
 from models import db,Usuario, Transacao
 
@@ -66,7 +67,33 @@ def dashboard():
     if "usuario_id" not in session:
         return redirect(url_for("login"))
     
-    return render_template("dashboard.html")
+    usuario_id = session["usuario_id"]
+    
+    transacoes = Transacao.query.filter_by(
+        usuario_id=usuario_id
+    ).order_by(Transacao.data.desc()).all()
+    
+    receitas = sum(
+        transacao.valor
+        for transacao in transacoes
+        if transacao.tipo == "receita"
+    )
+    
+    despesas = sum(
+        transacao.valor
+        for transacao in transacoes
+        if transacao.tipo == "despesa"
+    )
+    
+    saldo = receitas - despesas
+    
+    return render_template(
+        "dashboard.html",
+        transacoes=transacoes,
+        receitas=receitas,
+        despesas=despesas,
+        saldo=saldo
+        )
 
 @app.route("/logout")
 def logout():
@@ -87,11 +114,13 @@ def nova_transacao():
         valor = float(request.form["valor"])
         tipo = request.form["tipo"]
         categoria = request.form["categoria"]
-        data = request.form["data"]
+        data = request.form.get("data")
         
-        from datetime import datetime
+        if data:
+            data=datetime.strptime(data, "%Y-%m-%d").date()
+        else:
+            data = date.today()
     
-        data = datetime.strptime(data, "%Y-%m-%d").date()
     
         nova = Transacao(
             usuario_id=session["usuario_id"],
