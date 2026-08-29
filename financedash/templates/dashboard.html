@@ -66,6 +66,13 @@
                 <p>
                     Data: {{transacao.data.strftime("%d/%m/%Y")}}
                 </p>
+
+            
+
+                <a href="{{url_for('excluir_transacao', id=transacao.id)}}">
+                        Excluir
+                </a>
+            
             </div>
 
             <hr>
@@ -78,6 +85,8 @@
             </p>
 
     {% endif %}
+
+    
 
     <a href="{{ url_for('logout')}}">Sair</a>
 

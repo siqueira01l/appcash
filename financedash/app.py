@@ -137,6 +137,22 @@ def nova_transacao():
         return redirect(url_for("dashboard"))
 
     return render_template("nova_transacao.html")
+
+@app.route("/excluir_transacao/<int:id>")
+def excluir_transacao(id):
+    
+    if "usuario_id" not in session:
+        return redirect(url_for(login))
+    
+    transacao = Transacao.query.get_or_404(id)
+    
+    if transacao.usuario_id != session["usuario_id"]:
+        return "Acesso não autorizado", 403
+    
+    db.session.delete(transacao)
+    db.session.commit()
+
+    return redirect(url_for("dashboard"))
         
 
 if __name__ == "__main__":
