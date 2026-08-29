@@ -1,0 +1,80 @@
+from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from models import db,Usuario
+
+app = Flask(__name__)
+
+app.secret_key="chave-secreta-financedash"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///finance.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False 
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/cadastro", methods=["GET", "POST"])
+def cadastro():
+    
+    if request.method == "POST":
+        
+        nome=request.form["nome"]
+        email=request.form["email"]
+        senha=request.form["senha"]
+        
+        senha_hash=generate_password_hash(senha)
+        
+        novo_usuario= Usuario(nome=nome,email=email,senha=senha_hash)
+        
+        db.session.add(novo_usuario)
+        db.session.commit()
+        
+        return redirect(url_for("login"))
+    
+    return render_template("cadastro.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    
+    if request.method == "POST":
+        
+        email = request.form["email"]
+        senha = request.form["senha"]
+        
+        usuario = Usuario.query.filter_by(email=email).first()
+        
+        if usuario and check_password_hash(usuario.senha, senha):
+            
+            session["usuario_id"] = usuario.id
+            session["usuario_nome"] = usuario.nome
+            
+            return redirect(url_for("dashboard"))
+        
+        return "Email ou senha incorretos"
+
+    return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard():
+    
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+    
+    return render_template("dashboard.html")
+
+@app.route("/logout")
+def logout():
+    
+    session.clear()
+    
+    return redirect(url_for("login"))
+        
+
+if __name__ == "__main__":
+    app.run(debug=True)
