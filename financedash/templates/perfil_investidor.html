@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Perfil de Investidor - synflow</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <h1>synflow</h1>
+
+    <h2>Descubra seu perfil de investidor</h2>
+
+    <p>
+        Responda algumas perguntas para descobrir qual
+        perfil combina mais com seus objetivos e tolerância ao risco.
+    </p>
+
+    <form method="POST">
+
+        <!-- PERGUNTA 1 -->
+        <h3>1. Qual é o seu principal objetivo?</h3>
+
+        <label>
+            <input type="radio" name="objetivo" value="reserva" required>
+            Criar uma reserva de emergência
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="objetivo" value="patrimonio">
+            Construir patrimônio
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="objetivo" value="crescimento">
+            Buscar maior crescimento do dinheiro
+        </label>
+
+
+        <!-- PERGUNTA 2 -->
+        <h3>2. Por quanto tempo pretende deixar o dinheiro investido?</h3>
+
+        <label>
+            <input type="radio" name="prazo" value="curto" required>
+            Menos de 1 ano
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="prazo" value="medio">
+            1 a 5 anos
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="prazo" value="longo">
+            Mais de 5 anos
+        </label>
+
+
+        <!-- PERGUNTA 3 -->
+        <h3>3. Se seu investimento caísse 20%, o que você faria?</h3>
+
+        <label>
+            <input type="radio" name="risco" value="vender" required>
+            Venderia para evitar mais perdas
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="risco" value="esperar">
+            Esperaria até o investimento se recuperar
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="risco" value="comprar">
+            Aproveitaria a queda para investir mais
+        </label>
+
+
+        <!-- PERGUNTA 4 -->
+        <h3>4. Como você se sente com investimentos que podem oscilar bastante?</h3>
+
+        <label>
+            <input type="radio" name="oscilacao" value="baixo" required>
+            Prefiro evitar oscilações
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="oscilacao" value="medio">
+            Aceito algumas oscilações
+        </label>
+
+        <br>
+
+        <label>
+            <input type="radio" name="oscilacao" value="alto">
+            Aceito oscilações maiores em busca de retorno
+        </label>
+
+
+        <br><br>
+
+        <button type="submit">
+            Descobrir meu perfil
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{{ url_for('investimentos') }}">
+        Voltar para investimentos
+    </a>
+
+</body>
+
+</html>

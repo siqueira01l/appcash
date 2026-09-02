@@ -187,12 +187,148 @@ def editar_transacao(id):
         )
 
 
-@app.route("/investimentimos")
+@app.route("/investimentos")
 def investimentos():
     if "usuario_id" not in session:
         return redirect(url_for("login"))
     
     return render_template("investimentos.html")
+
+@app.route("/perfil-investidor", methods=["GET", "POST"])
+def perfil_investidor():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        objetivo = request.form["objetivo"]
+        prazo = request.form["prazo"]
+        risco = request.form["risco"]
+        oscilacao = request.form["oscilacao"]
+
+        pontos = 0
+
+        # Objetivo
+        if objetivo == "reserva":
+            pontos += 1
+        elif objetivo == "patrimonio":
+            pontos += 2
+        elif objetivo == "crescimento":
+            pontos += 3
+
+        # Prazo
+        if prazo == "curto":
+            pontos += 1
+        elif prazo == "medio":
+            pontos += 2
+        elif prazo == "longo":
+            pontos += 3
+
+        # Tolerância ao risco
+        if risco == "vender":
+            pontos += 1
+        elif risco == "esperar":
+            pontos += 2
+        elif risco == "comprar":
+            pontos += 3
+
+        # Oscilação
+        if oscilacao == "baixo":
+            pontos += 1
+        elif oscilacao == "medio":
+            pontos += 2
+        elif oscilacao == "alto":
+            pontos += 3
+
+        # Perfil
+        if pontos <= 6:
+            perfil = "Conservador"
+
+            investimentos = [
+                {
+                    "nome": "Tesouro Selic",
+                    "categoria": "Renda Fixa",
+                    "descricao": "Título público com foco em segurança e liquidez."
+                },
+                {
+                    "nome": "CDB",
+                    "categoria": "Renda Fixa",
+                    "descricao": "Título emitido por instituições financeiras."
+                },
+                {
+                    "nome": "LCI",
+                    "categoria": "Renda Fixa",
+                    "descricao": "Título de renda fixa ligado ao setor imobiliário."
+                },
+                {
+                    "nome": "LCA",
+                    "categoria": "Renda Fixa",
+                    "descricao": "Título de renda fixa ligado ao setor do agronegócio."
+                }
+            ]
+
+        elif pontos <= 9:
+            perfil = "Moderado"
+
+            investimentos = [
+                {
+                    "nome": "Tesouro Direto",
+                    "categoria": "Renda Fixa",
+                    "descricao": "Títulos públicos com diferentes características de prazo e risco."
+                },
+                {
+                    "nome": "ETFs",
+                    "categoria": "Renda Variável",
+                    "descricao": "Fundos negociados em bolsa que acompanham índices ou estratégias."
+                },
+                {
+                    "nome": "FIIs",
+                    "categoria": "Fundos Imobiliários",
+                    "descricao": "Fundos relacionados ao mercado imobiliário e negociados em bolsa."
+                },
+                {
+                    "nome": "Fundos Multimercado",
+                    "categoria": "Fundos",
+                    "descricao": "Fundos que podem investir em diferentes classes de ativos."
+                }
+            ]
+
+        else:
+            perfil = "Arrojado"
+
+            investimentos = [
+                {
+                    "nome": "Ações",
+                    "categoria": "Renda Variável",
+                    "descricao": "Participação no capital de empresas negociadas em bolsa."
+                },
+                {
+                    "nome": "ETFs",
+                    "categoria": "Renda Variável",
+                    "descricao": "Fundos negociados em bolsa que podem acompanhar índices de ações."
+                },
+                {
+                    "nome": "FIIs",
+                    "categoria": "Fundos Imobiliários",
+                    "descricao": "Fundos imobiliários negociados em bolsa."
+                },
+                {
+                    "nome": "Fundos de Ações",
+                    "categoria": "Fundos",
+                    "descricao": "Fundos com exposição ao mercado de ações."
+                }
+            ]
+
+        return render_template(
+            "perfil_resultado.html",
+            perfil=perfil,
+            pontos=pontos,
+            investimentos=investimentos
+        )
+
+    return render_template("perfil_investidor.html")
+        
 
 if __name__ == "__main__":
     app.run(debug=True)

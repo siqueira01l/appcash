@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Seu Perfil - synflow</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <h1>synflow</h1>
+
+    <h2>Seu perfil de investidor</h2>
+
+    <p>
+        Com base nas suas respostas, identificamos seu perfil:
+    </p>
+
+    <h1>{{ perfil }}</h1>
+
+    <p>
+        Pontuação: {{ pontos }} / 12
+    </p>
+
+    <hr>
+
+    <h3>Opções para estudar</h3>
+
+    {% for investimento in investimentos %}
+
+        <div>
+
+            <h4>{{ investimento.nome }}</h4>
+
+            <p>
+                <strong>Categoria:</strong>
+                {{ investimento.categoria }}
+            </p>
+
+            <p>
+                {{ investimento.descricao }}
+            </p>
+
+        </div>
+
+        <hr>
+
+    {% endfor %}
+
+    <h3>⚠️ Importante</h3>
+
+    <p>
+        As informações apresentadas pelo FinanceDash possuem
+        finalidade exclusivamente educativa e não constituem
+        recomendação individual de investimento.
+    </p>
+
+    <br>
+
+    <a href="{{ url_for('perfil_investidor') }}">
+        Refazer questionário
+    </a>
+
+    <br><br>
+
+    <a href="{{ url_for('investimentos') }}">
+        Voltar para investimentos
+    </a>
+
+    <br><br>
+
+    <a href="{{ url_for('dashboard') }}">
+        Voltar para Dashboard
+    </a>
+
+</body>
+
+</html>
