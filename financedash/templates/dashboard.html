@@ -2,97 +2,216 @@
 <html lang="pt-br">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard - FinanceDash</title>
+    <title>Dashboard - Synflow</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 
 <body>
-    
-    <h1>FinanceDash</h1>
 
-    <h2>Olá {{ session["usuario_nome"]}}!</h2>
+    <div class="dashboard">
 
-    <a href="{{ url_for('nova_transacao')}}">Nova Transação</a>
+        <!-- HEADER -->
 
-    <hr>
-
-    <h3>Resumo financeiro</h3>
-
-    <p>
-        Receitas:
-        R$ {{ "%.2f"|format(receitas) }}
-    </p>
-
-    <p>
-        Despesas:
-        R$ {{ "%.2f"|format(despesas )}}
-    </p>
-
-    <p>
-        Saldo:
-        R$ {{ "%.2f"|format(saldo) }}
-    </p>
-
-    <hr>
-
-    <h3>Transações</h3>
-
-    {% if transacoes %}
-
-        {% for transacao in transacoes %}
+        <header class="header">
 
             <div>
-                <strong> 
-                    {{ transacao.descricao}}
-                </strong>
+                <h1>Synflow</h1>
 
                 <p>
-                    Categoria: {{transacao.categoria}}
+                    Olá, {{ session["usuario_nome"] }} 👋
                 </p>
-
-                <p>
-                    Tipo: {{transacao.tipo}}
-                </p>
-                    
-                <p>
-                    Valor:
-                    R$ {{ "%.2f"|format(transacao.valor)}}
-                </p>
-
-                <p>
-                    Data: {{transacao.data.strftime("%d/%m/%Y")}}
-                </p>
-
-                <a href="{{url_for('editar_transacao', id=transacao.id)}}">
-                    Editar
-                </a>
-
-            
-
-                <a href="{{url_for('excluir_transacao', id=transacao.id)}}">
-                        Excluir
-                </a>
-            
             </div>
 
-            <hr>
-        {% endfor %}
+            <div>
 
-    {% else %}
+                <a href="{{url_for('investimentos')}}">
+                    Investimentos
+                </a>
 
-            <p>
-                Você ainda não possui transações.
-            </p>
+                <a class="btn-nova" href="{{ url_for('nova_transacao') }}">
+                    + Nova transação
+                 </a>
 
-    {% endif %}
+            </div>
 
-    
+        </header>
 
-    <a href="{{ url_for('logout')}}">Sair</a>
+
+        <!-- RESUMO -->
+
+        <section class="resumo">
+
+            <div class="card saldo">
+
+                <span>Saldo atual</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(saldo) }}
+                </strong>
+
+            </div>
+
+
+            <div class="card receita">
+
+                <span>Receitas</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(receitas) }}
+                </strong>
+
+            </div>
+
+
+            <div class="card despesa">
+
+                <span>Despesas</span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(despesas) }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- TRANSAÇÕES -->
+
+        <section class="transacoes">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Transações</h2>
+
+                    <p>
+                        Suas movimentações recentes
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if transacoes %}
+
+                <div class="lista-transacoes">
+
+                    {% for transacao in transacoes %}
+
+                        <div class="transacao">
+
+                            <div class="transacao-info">
+
+                                <strong>
+                                    {{ transacao.descricao }}
+                                </strong>
+
+                                <span>
+                                    {{ transacao.categoria }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="transacao-data">
+
+                                <span class="tipo {{ transacao.tipo }}">
+
+                                    {% if transacao.tipo == "receita" %}
+                                        Receita
+                                    {% else %}
+                                        Despesa
+                                    {% endif %}
+
+                                </span>
+
+                                <span>
+                                    {{ transacao.data.strftime("%d/%m/%Y") }}
+                                </span>
+
+                            </div>
+
+
+                            <strong class="valor {{ transacao.tipo }}">
+
+                                {% if transacao.tipo == "receita" %}
+                                    +
+                                {% else %}
+                                    -
+                                {% endif %}
+
+                                R$ {{ "%.2f"|format(transacao.valor) }}
+
+                            </strong>
+
+
+                            <div class="acoes">
+
+                                <a
+                                    href="{{ url_for('editar_transacao', id=transacao.id) }}"
+                                    class="editar">
+
+                                    Editar
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('excluir_transacao', id=transacao.id) }}"
+                                    class="excluir">
+
+                                    Excluir
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="vazio">
+
+                    <p>
+                        Você ainda não possui transações.
+                    </p>
+
+                    <a href="{{ url_for('nova_transacao') }}">
+                        Criar primeira transação
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- LOGOUT -->
+
+        <a class="logout"
+           href="{{ url_for('logout') }}">
+
+            Sair da conta
+
+        </a>
+
+    </div>
 
 </body>
 
