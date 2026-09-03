@@ -2,7 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 import requests
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+BRAPI_TOKEN = os.getenv("BRAPI_TOKEN")
 from models import db,Usuario, Transacao
 
 app = Flask(__name__)
@@ -64,37 +69,136 @@ def login():
 
 @app.route("/dashboard")
 def dashboard():
-    
+
     if "usuario_id" not in session:
         return redirect(url_for("login"))
-    
-    usuario_id = session["usuario_id"]
-    
-    transacoes = Transacao.query.filter_by(
-        usuario_id=usuario_id
-    ).order_by(Transacao.data.desc()).all()
-    
-    receitas = sum(
-        transacao.valor
-        for transacao in transacoes
-        if transacao.tipo == "receita"
+
+    # =========================
+    # TRANSAÇÕES
+    # =========================
+
+    transacoes = (
+        Transacao.query
+        .filter_by(usuario_id=session["usuario_id"])
+        .order_by(Transacao.data.desc())
+        .all()
     )
-    
-    despesas = sum(
-        transacao.valor
-        for transacao in transacoes
-        if transacao.tipo == "despesa"
-    )
-    
+
+
+    # =========================
+    # RECEITAS E DESPESAS
+    # =========================
+
+    receitas = 0
+    despesas = 0
+
+    for transacao in transacoes:
+
+        if transacao.tipo == "receita":
+            receitas += transacao.valor
+
+        elif transacao.tipo == "despesa":
+            despesas += transacao.valor
+
+
     saldo = receitas - despesas
-    
+
+
+    # =========================
+    # GRÁFICO RECEITAS X DESPESAS
+    # =========================
+
+    meses = {}
+
+    for transacao in transacoes:
+
+        mes = transacao.data.strftime("%Y-%m")
+
+        if mes not in meses:
+            meses[mes] = {
+                "receitas": 0,
+                "despesas": 0
+            }
+
+        if transacao.tipo == "receita":
+
+            meses[mes]["receitas"] += transacao.valor
+
+        elif transacao.tipo == "despesa":
+
+            meses[mes]["despesas"] += transacao.valor
+
+
+    meses_ordenados = sorted(meses.keys())
+
+    labels_meses = []
+    valores_receitas = []
+    valores_despesas = []
+
+
+    for mes in meses_ordenados:
+
+        ano, numero_mes = mes.split("-")
+
+        labels_meses.append(
+            f"{numero_mes}/{ano}"
+        )
+
+        valores_receitas.append(
+            meses[mes]["receitas"]
+        )
+
+        valores_despesas.append(
+            meses[mes]["despesas"]
+        )
+
+
+    # =========================
+    # DESPESAS POR CATEGORIA
+    # =========================
+
+    categorias = {}
+
+    for transacao in transacoes:
+
+        if str(transacao.tipo).strip().lower() == "despesa":
+
+            categoria = transacao.categoria
+
+            if not categoria:
+                categoria = "Outros"
+
+            if categoria not in categorias:
+                categorias[categoria] = 0
+
+            categorias[categoria] += transacao.valor
+
+
+    categorias_labels = list(categorias.keys())
+
+    categorias_valores = list(categorias.values())
+
+
+    # =========================
+    # DASHBOARD
+    # =========================
+
     return render_template(
         "dashboard.html",
+
         transacoes=transacoes,
+
         receitas=receitas,
         despesas=despesas,
-        saldo=saldo
-        )
+        saldo=saldo,
+
+        labels_meses=labels_meses,
+        valores_receitas=valores_receitas,
+        valores_despesas=valores_despesas,
+
+        categorias_labels=categorias_labels,
+        categorias_valores=categorias_valores
+    )
 
 @app.route("/logout")
 def logout():
@@ -329,6 +433,77 @@ def perfil_investidor():
         )
 
     return render_template("perfil_investidor.html")
+    
+@app.route("/radar")
+def radar():
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    url = "https://brapi.dev/api/v2/stocks/quote"
+
+    params = {
+        "symbols": "PETR4,VALE3,ITUB4"
+    }
+
+    resposta = requests.get(url, params=params)
+
+    if resposta.status_code != 200:
+        return "Erro ao consultar dados do mercado"
+
+    dados = resposta.json()
+
+    ativos = dados["results"]
+
+    # Ordena os ativos pela maior variação percentual
+    ranking = sorted(
+        ativos,
+        key=lambda ativo: ativo["data"]["regularMarketChangePercent"],
+        reverse=True
+    )
+
+    return render_template(
+        "radar.html",
+        dados=ativos,
+        ranking=ranking
+    )
+    
+@app.route("/historico/<symbol>")
+def historico(symbol):
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    url = "https://brapi.dev/api/v2/stocks/historical"
+
+    params = {
+        "symbols": symbol,
+        "range": "1mo",
+        "interval": "1d"
+    }
+
+    headers = {
+        "Authorization": f"Bearer {BRAPI_TOKEN}"
+    }
+
+    resposta = requests.get(
+        url,
+        params=params,
+        headers=headers
+    )
+
+    if resposta.status_code != 200:
+        return f"Erro ao consultar histórico: {resposta.text}"
+
+    dados = resposta.json()
+
+    historico = dados["results"][0]["data"]["historicalDataPrice"]
+
+    return render_template(
+        "historico.html",
+        historico=historico,
+        symbol=symbol
+    )
+                
         
 
 if __name__ == "__main__":

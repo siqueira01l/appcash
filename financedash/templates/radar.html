@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Radar do Mercado - synflow</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- CABEÇALHO -->
+        <header class="header">
+
+            <div>
+
+                <h1>Radar do Mercado</h1>
+
+                <p>
+                    Acompanhe alguns ativos do mercado brasileiro
+                </p>
+
+            </div>
+
+            <div>
+
+                <a href="{{ url_for('investimentos') }}">
+                    Investimentos
+                </a>
+
+                <a href="{{ url_for('dashboard') }}">
+                    Dashboard
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- DESTAQUES -->
+        <section class="transacoes">
+
+            <h2>🏆 Destaques do mercado</h2>
+
+            <div class="resumo">
+
+                {% for ativo in ranking %}
+
+                    <div class="card">
+
+                        {% if loop.index == 1 %}
+
+                            <h3>🥇 1º lugar</h3>
+
+                        {% elif loop.index == 2 %}
+
+                            <h3>🥈 2º lugar</h3>
+
+                        {% elif loop.index == 3 %}
+
+                            <h3>🥉 3º lugar</h3>
+
+                        {% endif %}
+
+
+                        <h2>
+                            {{ ativo.symbol }}
+                        </h2>
+
+
+                        <p>
+                            {{ ativo.data.longName }}
+                        </p>
+
+
+                        <h3>
+                            R$
+                            {{ "%.2f"|format(
+                                ativo.data.regularMarketPrice
+                            ) }}
+                        </h3>
+
+
+                        <p>
+                            Variação:
+
+                            <strong>
+                                {{ "%.2f"|format(
+                                    ativo.data.regularMarketChangePercent
+                                ) }}%
+                            </strong>
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <!-- ATIVOS -->
+        <section class="resumo">
+
+            {% for ativo in dados %}
+
+                <div class="card">
+
+                    <h2>
+                        {{ ativo.symbol }}
+                    </h2>
+
+
+                    <p>
+                        {{ ativo.data.longName }}
+                    </p>
+
+
+                    <h3>
+                        R$
+                        {{ "%.2f"|format(
+                            ativo.data.regularMarketPrice
+                        ) }}
+                    </h3>
+
+
+                    <p>
+                        Variação:
+
+                        <strong>
+                            {{ "%.2f"|format(
+                                ativo.data.regularMarketChangePercent
+                            ) }}%
+                        </strong>
+                    </p>
+
+
+                    <a href="{{ url_for(
+                        'historico',
+                        symbol=ativo.symbol
+                    ) }}">
+                        📈 Ver histórico
+                    </a>
+
+
+                    <p>
+                        Volume:
+
+                        {{
+                            "{:,.0f}".format(
+                                ativo.data.regularMarketVolume
+                            ).replace(",", ".")
+                        }}
+                    </p>
+
+
+                    <hr>
+
+
+                    <p>
+                        Máxima do dia:
+
+                        R$
+                        {{ "%.2f"|format(
+                            ativo.data.regularMarketDayHigh
+                        ) }}
+                    </p>
+
+
+                    <p>
+                        Mínima do dia:
+
+                        R$
+                        {{ "%.2f"|format(
+                            ativo.data.regularMarketDayLow
+                        ) }}
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </section>
+
+
+        <!-- SOBRE -->
+        <section class="transacoes">
+
+            <h2>Sobre o Radar</h2>
+
+            <p>
+                Os dados apresentados são informações de mercado
+                utilizadas para fins educacionais e de acompanhamento.
+            </p>
+
+            <p>
+                O Radar não constitui recomendação de compra ou venda
+                de ativos.
+            </p>
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

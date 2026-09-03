@@ -12,6 +12,15 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
@@ -23,22 +32,27 @@
         <header class="header">
 
             <div>
+
                 <h1>Synflow</h1>
 
                 <p>
                     Olá, {{ session["usuario_nome"] }} 👋
                 </p>
+
             </div>
 
             <div>
 
-                <a href="{{url_for('investimentos')}}">
+                <a href="{{ url_for('investimentos') }}">
                     Investimentos
                 </a>
 
-                <a class="btn-nova" href="{{ url_for('nova_transacao') }}">
+                <a class="btn-nova"
+                   href="{{ url_for('nova_transacao') }}">
+
                     + Nova transação
-                 </a>
+
+                </a>
 
             </div>
 
@@ -82,6 +96,39 @@
             </div>
 
         </section>
+
+
+        <hr>
+
+
+        <!-- GRÁFICOS -->
+
+        <h3>Visão geral</h3>
+
+        <div class="graficos">
+
+            <!-- RECEITAS X DESPESAS -->
+
+            <div class="grafico-card">
+
+                <h3>Evolução financeira</h3>
+
+                <canvas id="graficoFinanceiro"></canvas>
+
+            </div>
+
+
+            <!-- DESPESAS POR CATEGORIA -->
+
+            <div class="grafico-card">
+
+                <h3>Despesas por categoria</h3>
+
+                <canvas id="graficoCategorias"></canvas>
+
+            </div>
+
+        </div>
 
 
         <!-- TRANSAÇÕES -->
@@ -129,15 +176,22 @@
                                 <span class="tipo {{ transacao.tipo }}">
 
                                     {% if transacao.tipo == "receita" %}
+
                                         Receita
+
                                     {% else %}
+
                                         Despesa
+
                                     {% endif %}
 
                                 </span>
 
+
                                 <span>
+
                                     {{ transacao.data.strftime("%d/%m/%Y") }}
+
                                 </span>
 
                             </div>
@@ -146,9 +200,13 @@
                             <strong class="valor {{ transacao.tipo }}">
 
                                 {% if transacao.tipo == "receita" %}
+
                                     +
+
                                 {% else %}
+
                                     -
+
                                 {% endif %}
 
                                 R$ {{ "%.2f"|format(transacao.valor) }}
@@ -192,7 +250,9 @@
                     </p>
 
                     <a href="{{ url_for('nova_transacao') }}">
+
                         Criar primeira transação
+
                     </a>
 
                 </div>
@@ -212,6 +272,136 @@
         </a>
 
     </div>
+
+
+    <!-- SCRIPTS DOS GRÁFICOS -->
+
+    <script>
+
+        // =========================
+        // RECEITAS X DESPESAS
+        // =========================
+
+        const labelsMeses =
+            {{ labels_meses | tojson }};
+
+        const valoresReceitas =
+            {{ valores_receitas | tojson }};
+
+        const valoresDespesas =
+            {{ valores_despesas | tojson }};
+
+
+        const graficoFinanceiro =
+            document
+                .getElementById("graficoFinanceiro")
+                .getContext("2d");
+
+
+        new Chart(graficoFinanceiro, {
+
+            type: "line",
+
+            data: {
+
+                labels: labelsMeses,
+
+                datasets: [
+
+                    {
+                        label: "Receitas",
+
+                        data: valoresReceitas,
+
+                        tension: 0.3
+                    },
+
+                    {
+                        label: "Despesas",
+
+                        data: valoresDespesas,
+
+                        tension: 0.3
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            callback: function(value) {
+
+                                return "R$ " +
+                                    Number(value).toFixed(2);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+
+        // =========================
+        // DESPESAS POR CATEGORIA
+        // =========================
+
+        const categoriasLabels =
+            {{ categorias_labels | tojson }};
+
+        const categoriasValores =
+            {{ categorias_valores | tojson }};
+
+
+        const graficoCategorias =
+            document
+                .getElementById("graficoCategorias")
+                .getContext("2d");
+
+
+        new Chart(graficoCategorias, {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: categoriasLabels,
+
+                datasets: [
+
+                    {
+                        data: categoriasValores
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true
+
+            }
+
+        });
+
+    </script>
 
 </body>
 

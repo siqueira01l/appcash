@@ -7,21 +7,30 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
 
-    background: #f5f7fb;
+    background: #08090b;
 
-    color: #111827;
+    color: #f5f5f5;
+
+    min-height: 100vh;
 }
 
+
+/* =========================
+   DASHBOARD
+========================= */
+
 .dashboard {
-    max-width: 1200px;
+    max-width: 1400px;
 
     margin: auto;
 
-    padding: 40px 25px;
+    padding: 35px 40px;
 }
 
 
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
 
 .header {
     display: flex;
@@ -30,133 +39,243 @@ body {
 
     align-items: center;
 
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 }
 
 .header h1 {
     font-size: 32px;
 
+    font-weight: 600;
+
+    letter-spacing: -1px;
+
     margin-bottom: 8px;
 }
 
 .header p {
-    color: #6b7280;
+    color: #8d8f96;
+
+    font-size: 14px;
 }
 
 
-/* BOTÃO */
+/* LINKS DO HEADER */
+
+.header a {
+    color: #a7a8ad;
+
+    text-decoration: none;
+
+    margin-right: 20px;
+
+    font-size: 14px;
+
+    transition: 0.2s;
+}
+
+.header a:hover {
+    color: white;
+}
+
+
+/* =========================
+   BOTÃO NOVA TRANSAÇÃO
+========================= */
 
 .btn-nova {
-    background: #2563eb;
+    background: #ef4444;
 
-    color: white;
+    color: white !important;
 
-    padding: 13px 20px;
+    padding: 12px 18px;
 
-    border-radius: 10px;
+    border-radius: 9px;
 
     font-weight: bold;
 
-    text-decoration: none;
+    display: inline-block;
 
     transition: 0.2s;
 }
 
 .btn-nova:hover {
-    background: #1d4ed8;
+    background: #dc2626;
 
     transform: translateY(-2px);
 }
 
 
-/* RESUMO */
+/* =========================
+   RESUMO
+========================= */
 
 .resumo {
     display: grid;
 
     grid-template-columns: repeat(3, 1fr);
 
-    gap: 20px;
+    gap: 18px;
 
-    margin-bottom: 45px;
+    margin-bottom: 35px;
 }
 
+
+/* =========================
+   CARD
+========================= */
+
 .card {
-    background: white;
+    background: #111214;
 
     padding: 25px;
 
-    border-radius: 16px;
+    border-radius: 14px;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid #27282c;
 
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    box-shadow: none;
+
+    transition: 0.2s;
+}
+
+.card:hover {
+    border-color: #3a3b40;
+
+    transform: translateY(-2px);
 }
 
 .card span {
     display: block;
 
-    color: #6b7280;
+    color: #8d8f96;
 
-    font-size: 14px;
+    font-size: 13px;
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .card strong {
-    font-size: 28px;
+    font-size: 26px;
+
+    font-weight: 600;
 }
 
+
+/* CORES DOS CARDS */
+
 .card.saldo {
-    border-left: 5px solid #2563eb;
+    border-left: 3px solid #ef4444;
 }
 
 .card.receita {
-    border-left: 5px solid #16a34a;
+    border-left: 3px solid #22c55e;
 }
 
 .card.despesa {
-    border-left: 5px solid #dc2626;
+    border-left: 3px solid #ef4444;
 }
 
 
-/* TRANSAÇÕES */
+/* =========================
+   GRAFICOS
+========================= */
+
+.graficos {
+    display: grid;
+
+    grid-template-columns: 1.6fr 1fr;
+
+    gap: 18px;
+
+    margin-bottom: 35px;
+}
+
+.grafico-card {
+    background: #111214;
+
+    border: 1px solid #27282c;
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+    min-height: 380px;
+
+    position: relative;
+}
+
+.grafico-card h3 {
+    font-size: 17px;
+
+    font-weight: 600;
+
+    margin-bottom: 25px;
+
+    color: #f1f1f1;
+}
+
+
+/* CANVAS */
+
+.grafico-card canvas {
+    width: 100% !important;
+
+    max-height: 290px;
+}
+
+
+/* =========================
+   TITULOS
+========================= */
+
+h3 {
+    font-weight: 500;
+}
+
+
+/* =========================
+   TRANSAÇÕES
+========================= */
 
 .transacoes {
     margin-top: 20px;
 }
 
 .section-header {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .section-header h2 {
-    font-size: 22px;
+    font-size: 21px;
 
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
 .section-header p {
-    color: #6b7280;
+    color: #777a82;
 
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
-/* LISTA */
+/* =========================
+   LISTA
+========================= */
 
 .lista-transacoes {
-    background: white;
+    background: #111214;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid #27282c;
 
-    border-radius: 16px;
+    border-radius: 14px;
 
     overflow: hidden;
 }
 
 
-/* TRANSAÇÃO */
+/* =========================
+   TRANSAÇÃO
+========================= */
 
 .transacao {
     display: grid;
@@ -167,9 +286,15 @@ body {
 
     gap: 20px;
 
-    padding: 20px 25px;
+    padding: 19px 24px;
 
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #25262a;
+
+    transition: 0.2s;
+}
+
+.transacao:hover {
+    background: #151619;
 }
 
 .transacao:last-child {
@@ -181,16 +306,22 @@ body {
     display: block;
 
     margin-bottom: 5px;
+
+    color: #f3f3f3;
+
+    font-size: 14px;
 }
 
 .transacao-info span {
-    font-size: 13px;
+    font-size: 12px;
 
-    color: #6b7280;
+    color: #777a82;
 }
 
 
-/* DATA */
+/* =========================
+   DATA
+========================= */
 
 .transacao-data {
     display: flex;
@@ -199,13 +330,15 @@ body {
 
     gap: 6px;
 
-    font-size: 13px;
+    font-size: 12px;
 
-    color: #6b7280;
+    color: #777a82;
 }
 
 
-/* TIPO */
+/* =========================
+   TIPO
+========================= */
 
 .tipo {
     width: fit-content;
@@ -214,40 +347,44 @@ body {
 
     border-radius: 6px;
 
-    font-size: 11px;
+    font-size: 10px;
 
     font-weight: bold;
 }
 
 .tipo.receita {
-    background: #dcfce7;
+    background: rgba(34, 197, 94, 0.12);
 
-    color: #15803d;
+    color: #4ade80;
 }
 
 .tipo.despesa {
-    background: #fee2e2;
+    background: rgba(239, 68, 68, 0.12);
 
-    color: #b91c1c;
+    color: #f87171;
 }
 
 
-/* VALOR */
+/* =========================
+   VALOR
+========================= */
 
 .valor {
-    font-size: 16px;
+    font-size: 14px !important;
 }
 
 .valor.receita {
-    color: #16a34a;
+    color: #4ade80;
 }
 
 .valor.despesa {
-    color: #dc2626;
+    color: #f87171;
 }
 
 
-/* AÇÕES */
+/* =========================
+   AÇÕES
+========================= */
 
 .acoes {
     display: flex;
@@ -260,53 +397,64 @@ body {
 
     border-radius: 7px;
 
-    font-size: 12px;
+    font-size: 11px;
 
     text-decoration: none;
+
+    transition: 0.2s;
 }
 
 .editar {
-    background: #eff6ff;
+    background: #18191d;
 
-    color: #2563eb;
+    color: #a7a8ad;
+
+    border: 1px solid #303137;
+}
+
+.editar:hover {
+    color: white;
+
+    border-color: #55565c;
 }
 
 .excluir {
-    background: #fef2f2;
+    background: rgba(239, 68, 68, 0.08);
 
-    color: #dc2626;
+    color: #f87171;
+
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.excluir:hover {
+    background: rgba(239, 68, 68, 0.15);
 }
 
 
-/* VAZIO */
+/* =========================
+   VAZIO
+========================= */
 
 .vazio {
-    background: white;
+    background: #111214;
 
     padding: 50px;
 
     text-align: center;
 
-    border-radius: 16px;
+    border-radius: 14px;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid #27282c;
 }
 
 .vazio p {
-    color: #6b7280;
+    color: #777a82;
 
     margin-bottom: 15px;
 }
 
-
-/* LOGOUT */
-
-.logout {
-    display: inline-block;
-
-    margin-top: 30px;
-
-    color: #dc2626;
+.vazio a {
+    color: #ef4444;
 
     text-decoration: none;
 
@@ -314,7 +462,58 @@ body {
 }
 
 
-/* RESPONSIVO */
+/* =========================
+   LOGOUT
+========================= */
+
+.logout {
+    display: inline-block;
+
+    margin-top: 30px;
+
+    color: #777a82;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    transition: 0.2s;
+}
+
+.logout:hover {
+    color: #ef4444;
+}
+
+
+/* =========================
+   HR
+========================= */
+
+hr {
+    border: none;
+
+    border-top: 1px solid #242529;
+
+    margin: 30px 0;
+}
+
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 1000px) {
+
+    .graficos {
+        grid-template-columns: 1fr;
+    }
+
+    .resumo {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
 
 @media (max-width: 850px) {
 
@@ -347,8 +546,20 @@ body {
         gap: 20px;
     }
 
+    .header > div:last-child {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 10px;
+    }
+
+    .header a {
+        margin-right: 0;
+    }
+
     .btn-nova {
-        width: 100%;
+        width: auto;
 
         text-align: center;
     }
@@ -363,4 +574,22 @@ body {
         justify-content: flex-start;
     }
 
+}
+
+/* =========================
+   MINI GRÁFICOS DOS CARDS
+========================= */
+
+.mini-grafico {
+    height: 55px;
+
+    margin-top: 18px;
+
+    position: relative;
+}
+
+.mini-grafico canvas {
+    width: 100% !important;
+
+    height: 55px !important;
 }

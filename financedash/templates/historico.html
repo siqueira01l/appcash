@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16"
+      href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Histórico {{ symbol }} - synflow</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <header class="header">
+
+        <div>
+            <h1> {{ symbol }}</h1>
+            <p>Histórico dos últimos 30 dias</p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('radar') }}">
+                ← Voltar para o Radar
+            </a>
+        </div>
+
+    </header>
+
+
+    <section class="transacoes">
+
+        <h2>Histórico de preços</h2>
+
+        <div style="width: 100%; max-width: 1000px;">
+            <canvas id="grafico"></canvas>
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    const historico = {{ historico | tojson }};
+
+    const datas = historico.map(item => {
+
+        const data = new Date(item.date * 1000);
+
+        return data.toLocaleDateString("pt-BR");
+
+    });
+
+
+    const precos = historico.map(item => item.close);
+
+
+    const ctx = document
+        .getElementById("grafico")
+        .getContext("2d");
+
+
+    new Chart(ctx, {
+
+        type: "line",
+
+        data: {
+
+            labels: datas.reverse(),
+
+            datasets: [{
+
+                label: "{{ symbol }}",
+
+                data: precos.reverse(),
+
+                tension: 0.3,
+
+                fill: false,
+
+                borderWidth: 2,
+
+                pointRadius: 3
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    display: true
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: false,
+
+                    ticks: {
+
+                        callback: function(value) {
+                            return "R$ " + value.toFixed(2);
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>
