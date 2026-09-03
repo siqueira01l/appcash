@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Conectar banco - Synflow</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <header class="header">
+
+            <div>
+                <h1>Conectar conta bancária</h1>
+
+                <p>
+                    Conecte sua conta ao Synflow
+                </p>
+            </div>
+
+            <a href="{{ url_for('dashboard') }}">
+                Voltar
+            </a>
+
+        </header>
+
+
+        <section class="card">
+
+            <h2>Conectar banco</h2>
+
+            <p>
+                Escolha seu banco para começar a sincronização
+                das suas movimentações.
+            </p>
+
+            <br>
+
+            <button
+                id="btn-conectar"
+                class="btn-nova"
+                type="button">
+
+                Conectar conta
+
+            </button>
+
+        </section>
+
+    </div>
+
+
+    <!-- PLUGGY CONNECT -->
+    <script src="https://cdn.pluggy.ai/pluggy-connect/latest/pluggy-connect.js"></script>
+
+
+    <script>
+
+        const connectToken = "{{ connect_token }}";
+
+        console.log("=================================");
+        console.log("SYNFLOW - PLUGGY");
+        console.log("=================================");
+
+        console.log(
+            "Connect Token:",
+            connectToken
+        );
+
+        console.log(
+            "PluggyConnect:",
+            typeof PluggyConnect
+        );
+
+
+        const botao =
+            document.getElementById("btn-conectar");
+
+
+        console.log(
+            "Botão:",
+            botao
+        );
+
+
+        if (!connectToken) {
+
+            console.error(
+                "ERRO: Connect Token não foi recebido."
+            );
+
+        }
+
+
+        if (typeof PluggyConnect === "undefined") {
+
+            console.error(
+                "ERRO: biblioteca Pluggy não foi carregada."
+            );
+
+        }
+
+
+        const pluggyConnect = new PluggyConnect({
+
+            connectToken: connectToken,
+
+            onSuccess: function(itemData) {
+
+                console.log(
+                    "CONTA CONECTADA!"
+                );
+
+                console.log(
+                    "Dados:",
+                    itemData
+                );
+
+                const itemId =
+                    itemData.item?.id ||
+                    itemData.itemId ||
+                    itemData.id;
+
+                console.log(
+                    "Item ID:",
+                    itemId
+                );
+
+
+                if (!itemId) {
+
+                    console.error(
+                        "O Pluggy não retornou o Item ID."
+                    );
+
+                    return;
+                }
+
+
+                fetch(
+                    "{{ url_for('salvar_item_pluggy') }}",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            item_id: itemId
+                        })
+
+                    }
+                )
+
+                .then(response =>
+                    response.json()
+                )
+
+                .then(data => {
+
+                    console.log(
+                        "Resposta do servidor:",
+                        data
+                    );
+
+                    if (data.success) {
+
+                        window.location.href =
+                            "{{ url_for('dashboard') }}";
+
+                    } else {
+
+                        console.error(
+                            "Erro ao salvar Item:",
+                            data.error
+                        );
+
+                    }
+
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        "Erro no servidor:",
+                        error
+                    );
+
+                });
+
+            },
+
+
+            onError: function(error) {
+
+                console.error(
+                    "ERRO DO PLUGGY:",
+                    error
+                );
+
+            },
+
+
+            onClose: function() {
+
+                console.log(
+                    "Interface do Pluggy fechada."
+                );
+
+            }
+
+        });
+
+
+        botao.addEventListener(
+            "click",
+            function() {
+
+                console.log(
+                    "BOTÃO CLICADO"
+                );
+
+                console.log(
+                    "Abrindo Pluggy..."
+                );
+
+                pluggyConnect.init();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

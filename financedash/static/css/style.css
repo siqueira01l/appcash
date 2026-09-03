@@ -593,3 +593,31 @@ hr {
 
     height: 55px !important;
 }
+
+.header-acoes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-acoes a {
+    text-decoration: none;
+}
+
+.btn-sync {
+    background: #eef2ff;
+    color: #2563eb;
+
+    padding: 13px 20px;
+
+    border-radius: 10px;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.btn-sync:hover {
+    background: #e0e7ff;
+    transform: translateY(-2px);
+}

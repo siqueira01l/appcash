@@ -12,340 +12,394 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 
-    <link rel="icon" type="image/png" sizes="16x16"
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
           href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
 
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
+
 <body>
 
-    <div class="dashboard">
+<div class="dashboard">
 
-        <!-- HEADER -->
 
-        <header class="header">
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div>
+
+            <h1>Synflow</h1>
+
+            <p>
+                Olá, {{ session["usuario_nome"] }} 👋
+            </p>
+
+        </div>
+
+
+        <div class="header-acoes">
+
+            <a href="{{ url_for('investimentos') }}">
+                Investimentos
+            </a>
+
+            <a class="btn-sync"
+               href="{{ url_for('sincronizar_transacoes') }}">
+
+                ↻ Sincronizar conta
+
+            </a>
+
+            <a class="btn-nova"
+               href="{{ url_for('nova_transacao') }}">
+
+                + Nova transação
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- RESUMO -->
+
+    <section class="resumo">
+
+
+        <div class="card saldo">
+
+            <span>Saldo atual</span>
+
+            <strong>
+                R$ {{ "%.2f"|format(saldo) }}
+            </strong>
+
+        </div>
+
+
+
+        <div class="card receita">
+
+            <span>Receitas</span>
+
+            <strong>
+                R$ {{ "%.2f"|format(receitas) }}
+            </strong>
+
+        </div>
+
+
+
+        <div class="card despesa">
+
+            <span>Despesas</span>
+
+            <strong>
+                R$ {{ "%.2f"|format(despesas) }}
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+
+    <hr>
+
+
+
+    <!-- GRAFICOS -->
+
+    <h3>Visão geral</h3>
+
+
+    <div class="graficos">
+
+
+        <!-- EVOLUÇÃO FINANCEIRA -->
+
+        <div class="grafico-card">
+
+            <h3>Evolução financeira</h3>
+
+            <canvas id="graficoFinanceiro"></canvas>
+
+        </div>
+
+
+
+        <!-- DESPESAS POR CATEGORIA -->
+
+        <div class="grafico-card">
+
+            <h3>Despesas por categoria</h3>
+
+            <canvas id="graficoCategorias"></canvas>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- TRANSAÇÕES -->
+
+    <section class="transacoes">
+
+
+        <div class="section-header">
 
             <div>
 
-                <h1>Synflow</h1>
+                <h2>Transações</h2>
 
                 <p>
-                    Olá, {{ session["usuario_nome"] }} 👋
+                    Suas movimentações recentes
                 </p>
-
-            </div>
-
-            <div>
-
-                <a href="{{ url_for('investimentos') }}">
-                    Investimentos
-                </a>
-
-                <a class="btn-nova"
-                   href="{{ url_for('nova_transacao') }}">
-
-                    + Nova transação
-
-                </a>
-
-            </div>
-
-        </header>
-
-
-        <!-- RESUMO -->
-
-        <section class="resumo">
-
-            <div class="card saldo">
-
-                <span>Saldo atual</span>
-
-                <strong>
-                    R$ {{ "%.2f"|format(saldo) }}
-                </strong>
-
-            </div>
-
-
-            <div class="card receita">
-
-                <span>Receitas</span>
-
-                <strong>
-                    R$ {{ "%.2f"|format(receitas) }}
-                </strong>
-
-            </div>
-
-
-            <div class="card despesa">
-
-                <span>Despesas</span>
-
-                <strong>
-                    R$ {{ "%.2f"|format(despesas) }}
-                </strong>
-
-            </div>
-
-        </section>
-
-
-        <hr>
-
-
-        <!-- GRÁFICOS -->
-
-        <h3>Visão geral</h3>
-
-        <div class="graficos">
-
-            <!-- RECEITAS X DESPESAS -->
-
-            <div class="grafico-card">
-
-                <h3>Evolução financeira</h3>
-
-                <canvas id="graficoFinanceiro"></canvas>
-
-            </div>
-
-
-            <!-- DESPESAS POR CATEGORIA -->
-
-            <div class="grafico-card">
-
-                <h3>Despesas por categoria</h3>
-
-                <canvas id="graficoCategorias"></canvas>
 
             </div>
 
         </div>
 
 
-        <!-- TRANSAÇÕES -->
 
-        <section class="transacoes">
+        {% if transacoes %}
 
-            <div class="section-header">
 
-                <div>
+            <div class="lista-transacoes">
 
-                    <h2>Transações</h2>
 
-                    <p>
-                        Suas movimentações recentes
-                    </p>
+                {% for transacao in transacoes %}
 
-                </div>
+
+                    <div class="transacao">
+
+
+                        <div class="transacao-info">
+
+                            <strong>
+                                {{ transacao.descricao }}
+                            </strong>
+
+                            <span>
+                                {{ transacao.categoria }}
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="transacao-data">
+
+                            <span class="tipo {{ transacao.tipo }}">
+
+                                {% if transacao.tipo == "receita" %}
+
+                                    Receita
+
+                                {% else %}
+
+                                    Despesa
+
+                                {% endif %}
+
+                            </span>
+
+
+                            <span>
+
+                                {{ transacao.data.strftime("%d/%m/%Y") }}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <strong class="valor {{ transacao.tipo }}">
+
+                            {% if transacao.tipo == "receita" %}
+
+                                +
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                            R$ {{ "%.2f"|format(transacao.valor) }}
+
+                        </strong>
+
+
+
+                        <div class="acoes">
+
+
+                            <a
+                                href="{{ url_for('editar_transacao', id=transacao.id) }}"
+                                class="editar">
+
+                                Editar
+
+                            </a>
+
+
+
+                            <a
+                                href="{{ url_for('excluir_transacao', id=transacao.id) }}"
+                                class="excluir">
+
+                                Excluir
+
+                            </a>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
 
             </div>
 
 
-            {% if transacoes %}
+        {% else %}
 
-                <div class="lista-transacoes">
 
-                    {% for transacao in transacoes %}
+            <div class="vazio">
 
-                        <div class="transacao">
+                <p>
+                    Você ainda não possui transações.
+                </p>
 
-                            <div class="transacao-info">
+                <a href="{{ url_for('nova_transacao') }}">
 
-                                <strong>
-                                    {{ transacao.descricao }}
-                                </strong>
+                    Criar primeira transação
 
-                                <span>
-                                    {{ transacao.categoria }}
-                                </span>
+                </a>
 
-                            </div>
+            </div>
 
 
-                            <div class="transacao-data">
+        {% endif %}
 
-                                <span class="tipo {{ transacao.tipo }}">
 
-                                    {% if transacao.tipo == "receita" %}
+    </section>
 
-                                        Receita
 
-                                    {% else %}
 
-                                        Despesa
+    <!-- LOGOUT -->
 
-                                    {% endif %}
+    <a class="logout"
+       href="{{ url_for('logout') }}">
 
-                                </span>
+        Sair da conta
 
+    </a>
 
-                                <span>
 
-                                    {{ transacao.data.strftime("%d/%m/%Y") }}
+</div>
 
-                                </span>
 
-                            </div>
 
+<!-- JAVASCRIPT DOS GRÁFICOS -->
 
-                            <strong class="valor {{ transacao.tipo }}">
+<script>
 
-                                {% if transacao.tipo == "receita" %}
 
-                                    +
+    /* =========================================
+       GRÁFICO DE EVOLUÇÃO FINANCEIRA
+    ========================================= */
 
-                                {% else %}
 
-                                    -
+    const labelsMeses =
+        {{ labels_meses | tojson }};
 
-                                {% endif %}
 
-                                R$ {{ "%.2f"|format(transacao.valor) }}
+    const valoresReceitas =
+        {{ valores_receitas | tojson }};
 
-                            </strong>
 
+    const valoresDespesas =
+        {{ valores_despesas | tojson }};
 
-                            <div class="acoes">
 
-                                <a
-                                    href="{{ url_for('editar_transacao', id=transacao.id) }}"
-                                    class="editar">
 
-                                    Editar
+    const graficoFinanceiro =
+        document
+            .getElementById("graficoFinanceiro")
+            .getContext("2d");
 
-                                </a>
 
 
-                                <a
-                                    href="{{ url_for('excluir_transacao', id=transacao.id) }}"
-                                    class="excluir">
+    new Chart(graficoFinanceiro, {
 
-                                    Excluir
+        type: "line",
 
-                                </a>
+        data: {
 
-                            </div>
+            labels: labelsMeses,
 
-                        </div>
+            datasets: [
 
-                    {% endfor %}
+                {
 
-                </div>
+                    label: "Receitas",
 
-            {% else %}
+                    data: valoresReceitas,
 
-                <div class="vazio">
+                    tension: 0.3
 
-                    <p>
-                        Você ainda não possui transações.
-                    </p>
+                },
 
-                    <a href="{{ url_for('nova_transacao') }}">
+                {
 
-                        Criar primeira transação
+                    label: "Despesas",
 
-                    </a>
+                    data: valoresDespesas,
 
-                </div>
+                    tension: 0.3
 
-            {% endif %}
+                }
 
-        </section>
+            ]
 
+        },
 
-        <!-- LOGOUT -->
 
-        <a class="logout"
-           href="{{ url_for('logout') }}">
+        options: {
 
-            Sair da conta
+            responsive: true,
 
-        </a>
+            scales: {
 
-    </div>
+                y: {
 
+                    beginAtZero: true,
 
-    <!-- SCRIPTS DOS GRÁFICOS -->
+                    ticks: {
 
-    <script>
+                        callback: function(value) {
 
-        // =========================
-        // RECEITAS X DESPESAS
-        // =========================
-
-        const labelsMeses =
-            {{ labels_meses | tojson }};
-
-        const valoresReceitas =
-            {{ valores_receitas | tojson }};
-
-        const valoresDespesas =
-            {{ valores_despesas | tojson }};
-
-
-        const graficoFinanceiro =
-            document
-                .getElementById("graficoFinanceiro")
-                .getContext("2d");
-
-
-        new Chart(graficoFinanceiro, {
-
-            type: "line",
-
-            data: {
-
-                labels: labelsMeses,
-
-                datasets: [
-
-                    {
-                        label: "Receitas",
-
-                        data: valoresReceitas,
-
-                        tension: 0.3
-                    },
-
-                    {
-                        label: "Despesas",
-
-                        data: valoresDespesas,
-
-                        tension: 0.3
-                    }
-
-                ]
-
-            },
-
-            options: {
-
-                responsive: true,
-
-                scales: {
-
-                    y: {
-
-                        beginAtZero: true,
-
-                        ticks: {
-
-                            callback: function(value) {
-
-                                return "R$ " +
-                                    Number(value).toFixed(2);
-
-                            }
+                            return "R$ "
+                                + Number(value).toFixed(2);
 
                         }
 
@@ -355,53 +409,67 @@
 
             }
 
-        });
+        }
+
+    });
 
 
-        // =========================
-        // DESPESAS POR CATEGORIA
-        // =========================
 
-        const categoriasLabels =
-            {{ categorias_labels | tojson }};
-
-        const categoriasValores =
-            {{ categorias_valores | tojson }};
+    /* =========================================
+       GRÁFICO DE DESPESAS POR CATEGORIA
+    ========================================= */
 
 
-        const graficoCategorias =
-            document
-                .getElementById("graficoCategorias")
-                .getContext("2d");
+    const categoriasLabels =
+        {{ categorias_labels | tojson }};
 
 
-        new Chart(graficoCategorias, {
+    const categoriasValores =
+        {{ categorias_valores | tojson }};
 
-            type: "doughnut",
 
-            data: {
 
-                labels: categoriasLabels,
+    const graficoCategorias =
+        document
+            .getElementById("graficoCategorias")
+            .getContext("2d");
 
-                datasets: [
 
-                    {
-                        data: categoriasValores
-                    }
 
-                ]
+    new Chart(graficoCategorias, {
 
-            },
+        type: "doughnut",
 
-            options: {
+        data: {
 
-                responsive: true
+            labels: categoriasLabels,
 
-            }
+            datasets: [
 
-        });
+                {
 
-    </script>
+                    data: categoriasValores
+
+                }
+
+            ]
+
+        },
+
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: true
+
+        }
+
+    });
+
+
+</script>
+
 
 </body>
 
